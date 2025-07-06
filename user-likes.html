@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -8,6 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Include Telegram Web App script -->
+    <script src="https://telegram-worker.milaadfarzian.workers.dev"></script>
     <style>
 
         @font-face {
@@ -144,9 +147,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Telegram Web App specific initialization
+            if (window.Telegram && window.Telegram.WebApp) {
+                const WebApp = window.Telegram.WebApp;
+
+                WebApp.ready();
+                WebApp.expand();
+                WebApp.requestFullscreen(); // requestFullscreen might be disruptive, expand() is usually sufficient
+
+                // Optional: Set theme based on Telegram app theme
+                // html.setAttribute('data-theme', WebApp.themeParams.bg_color === '#ffffff' ? 'light' : 'dark');
+                // themeToggle.checked = WebApp.themeParams.bg_color !== '#ffffff';
+                // themeToggle.disabled = true; // Disable manual theme toggle if using Telegram theme
+            }
+
+
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
 
+            // Theme toggle logic (consider disabling if using Telegram theme)
             if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 html.setAttribute('data-theme', 'dark');
                 themeToggle.checked = true;

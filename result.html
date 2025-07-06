@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -8,6 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Include Telegram Web App script -->
+    <script src="https://telegram-worker.milaadfarzian.workers.dev"></script>
     <style>
         @font-face {
             font-family: 'MainFont';
@@ -115,6 +118,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Telegram Web App integration
+            if (window.Telegram && window.Telegram.WebApp) {
+                const WebApp = window.Telegram.WebApp;
+
+                WebApp.ready();
+                WebApp.expand();
+                WebApp.requestFullscreen(); // requestFullscreen might be disruptive, expand() is usually sufficient
+            }
+
             // Get track URL from query parameters
             const urlParams = new URLSearchParams(window.location.search);
             const trackUrl = urlParams.get('url');
