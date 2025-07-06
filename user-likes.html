@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -8,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        
+
         @font-face {
             font-family: 'MainFont';
             src: url('https://uploader-oss-mili.milaadfarzian.workers.dev/download/BQACAgQAAxkBAAIBuWgvk2eiesCCyNl2YmsWirMdTOpQAAIpFQACIid5UQiLWaIkcwABkjYE/documents/file_571.woff2') format('woff2');
@@ -94,15 +95,28 @@
             <span id="error-text"></span>
         </div>
         
-        <div id="results-container" class="hidden">
-            <h2 class="text-xl font-bold mb-4">آهنگ‌های مورد علاقه کاربر</h2>
-            <div id="tracks-list" class="grid grid-cols-1 md|grid-cols-2 gap-4">
-            </div>
-            <div class="mt-8 text-center">
-                <button id="load-more-btn" class="btn btn-primary hidden">نمایش بیشتر</button>
-            </div>
-        </div>
+        <!-- Results are now displayed in a modal -->
     </div>
+
+    <!-- Results Modal -->
+    <dialog id="likes_results_modal" class="modal modal-bottom">
+      <div class="modal-box flex flex-col max-h-screen">
+        <h3 class="font-bold text-lg mb-4">آهنگ‌های مورد علاقه کاربر</h3>
+        <div id="likes-results-container" class="py-4 overflow-y-auto flex-grow">
+            <!-- Tracks will be loaded here -->
+        </div>
+        <div class="mt-8 text-center">
+            <button id="load-more-btn" class="btn btn-primary hidden">نمایش بیشتر</button>
+        </div>
+        <div class="modal-action mt-4 flex-col">
+          <button id="download-all-btn" class="btn btn-secondary w-full py-4 rounded-xl mb-2 hidden">دانلود همه</button>
+          <form method="dialog" class="w-full">
+            <button class="btn w-full py-4 rounded-xl">بستن</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+
 
     <div class="fixed bottom-0 mb-4 z-50 lg:hidden w-full px-4">
         <button class="btn w-full text-center py-6 rounded-xl px-9" onclick="document.getElementById('mobile_menu_modal').showModal()">
@@ -157,31 +171,53 @@
             const loadingContainer = document.getElementById('loading-container');
             const errorContainer = document.getElementById('error-container');
             const errorText = document.getElementById('error-text');
-            const resultsContainer = document.getElementById('results-container');
-            const tracksList = document.getElementById('tracks-list');
+
+            // Elements for modal results
+            const likesResultsModal = document.getElementById('likes_results_modal');
+            const likesResultsContainer = document.getElementById('likes-results-container');
             const loadMoreBtn = document.getElementById('load-more-btn');
-            
+            const downloadAllBtn = document.getElementById('download-all-btn');
+
             let currentUserId = null;
             let currentOffset = 0;
-            const limit = 20;
-            
+            const defaultLimit = 20; // Default limit for API calls and load more
+            let allTrackUrls = []; // Array to store all fetched track URLs
+
             if (likesForm) {
                 likesForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     currentUserId = userIdInput.value.trim();
-                    const userLimit = limitInput.value ? parseInt(limitInput.value) : limit;
-                    
+                    // Use the value from the input for the initial fetch, default to defaultLimit
+                    const userLimit = limitInput.value ? parseInt(limitInput.value) : defaultLimit;
+
                     if (!currentUserId) return;
-                    
+
+                    // Reset state
                     currentOffset = 0;
-                    tracksList.innerHTML = '';
-                    resultsContainer.classList.add('hidden');
+                    allTrackUrls = []; // Clear previous URLs
+                    likesResultsContainer.innerHTML = ''; // Clear previous results
                     errorContainer.classList.add('hidden');
+                    likesResultsModal.close(); // Close modal if open
                     loadingContainer.classList.remove('hidden');
-                    
+                    downloadAllBtn.classList.add('hidden'); // Hide download all initially
+                    loadMoreBtn.classList.add('hidden'); // Hide load more initially
+
+
                     try {
+                        // Fetch initial set of likes
                         await fetchLikes(currentUserId, userLimit, 0);
-                        resultsContainer.classList.remove('hidden');
+
+                        // If fetchLikes was successful and added tracks, show the modal
+                        if (allTrackUrls.length > 0) {
+                             likesResultsModal.showModal();
+                             downloadAllBtn.classList.remove('hidden'); // Show download all if tracks were found
+                        } else {
+                             // If no tracks found and no error was thrown by fetchLikes (e.g., API returned empty list without error status)
+                             // This case should ideally be handled by the throw in fetchLikes, but as a fallback:
+                             errorText.textContent = 'هیچ آهنگ مورد علاقه‌ای یافت نشد';
+                             errorContainer.classList.remove('hidden');
+                        }
+
                     } catch (error) {
                         console.error('Error fetching likes:', error);
                         errorText.textContent = error.message || 'خطا در دریافت لیست لایک‌ها';
@@ -191,75 +227,114 @@
                     }
                 });
             }
-            
+
             if (loadMoreBtn) {
                 loadMoreBtn.addEventListener('click', async function() {
                     if (!currentUserId) return;
-                    
+
                     loadMoreBtn.disabled = true;
                     loadMoreBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> در حال بارگذاری...';
-                    
+
                     try {
-                        currentOffset += limit;
-                        await fetchLikes(currentUserId, limit, currentOffset);
+                        // Use the default limit for loading more
+                        await fetchLikes(currentUserId, defaultLimit, currentOffset + defaultLimit);
+                        currentOffset += defaultLimit; // Update offset only on successful fetch
                     } catch (error) {
                         console.error('Error loading more likes:', error);
+                        // Optionally display an error message for load more failure, maybe in the modal itself
                     } finally {
                         loadMoreBtn.disabled = false;
                         loadMoreBtn.textContent = 'نمایش بیشتر';
                     }
                 });
             }
-            
-            async function fetchLikes(userId, limit, offset) {
+
+            if (downloadAllBtn) {
+                downloadAllBtn.addEventListener('click', function() {
+                    if (allTrackUrls.length === 0) {
+                        alert('هیچ آهنگی برای دانلود وجود ندارد.');
+                        return;
+                    }
+                    // Open each track URL in a new tab for download
+                    allTrackUrls.forEach(url => {
+                        // Add a small delay between opening tabs to avoid being blocked by browsers
+                        setTimeout(() => {
+                            window.open(`/result.html?url=${encodeURIComponent(url)}`, '_blank');
+                        }, 100); // 100ms delay
+                    });
+                });
+            }
+
+
+            async function fetchLikes(userId, fetchLimit, fetchOffset) {
                 try {
-                    const response = await fetch(`https://autumn-waterfall-ddac.milaadfarzian.workers.dev/get_likes/${userId}?limit=${limit}&offset=${offset}`);
+                    const response = await fetch(`https://autumn-waterfall-ddac.milaadfarzian.workers.dev/get_likes/${userId}?limit=${fetchLimit}&offset=${fetchOffset}`);
                     const data = await response.json();
-                    
+
                     if (!response.ok) {
+                        // If API returns an error status, throw an error with the message
                         throw new Error(data.message || 'خطا در دریافت اطلاعات');
                     }
-                    
-                    if (data.tracks && data.tracks.length > 0) {
-                        displayTracks(data.tracks);
-                        
-                        if (data.tracks.length >= limit) {
+
+                    // Check if data.likes exists and is an array
+                    if (data.likes && Array.isArray(data.likes) && data.likes.length > 0) {
+                        displayTracks(data.likes, likesResultsContainer);
+
+                        // Add fetched track URLs to the global array
+                        data.likes.forEach(track => {
+                            if (track.permalink_url) {
+                                allTrackUrls.push(track.permalink_url);
+                            }
+                        });
+
+                        // Determine if there are potentially more tracks to load
+                        // If the number of returned tracks is exactly the limit requested, assume there might be more.
+                        if (data.likes.length === fetchLimit) {
                             loadMoreBtn.classList.remove('hidden');
                         } else {
                             loadMoreBtn.classList.add('hidden');
                         }
-                    } else if (offset === 0) {
-                        throw new Error('هیچ آهنگ مورد علاقه‌ای یافت نشد');
+
                     } else {
-                        loadMoreBtn.classList.add('hidden');
+                        // No tracks returned
+                        if (fetchOffset === 0) {
+                            // If this was the initial fetch and no tracks were found
+                            // Throw an error to be caught by the submit handler
+                            throw new Error('هیچ آهنگ مورد علاقه‌ای یافت نشد');
+                        } else {
+                            // If loading more and no tracks were returned, hide the load more button
+                            loadMoreBtn.classList.add('hidden');
+                        }
                     }
+                    // If successful and this was the initial fetch (offset 0), ensure download all is visible if tracks were added
+                    if (fetchOffset === 0 && allTrackUrls.length > 0) {
+                         downloadAllBtn.classList.remove('hidden');
+                    }
+
+
                 } catch (error) {
+                    // Re-throw the error so the caller can handle it (e.g., display in error container)
                     throw error;
                 }
             }
-            
-            function displayTracks(tracks) {
-                tracks.forEach(track => {
-                    const trackCard = document.createElement('div');
-                    trackCard.className = 'card bg-base-100 track-card';
-                    trackCard.innerHTML = `
-                        <div class="card-body p-4">
-                            <div class="flex items-center gap-4">
-                                <figure class="w-16 h-16 flex-shrink-0">
-                                    <img src="${track.artwork_url || 'https://via.placeholder.com/150'}" alt="${track.title}" class="rounded-lg w-full h-full object-cover" />
-                                </figure>
-                                <div class="flex-grow">
-                                    <h3 class="font-semibold line-clamp-1">${track.title}</h3>
-                                    <p class="text-sm text-gray-500 line-clamp-1">${track.artist}</p>
-                                    <div class="card-actions justify-end mt-2">
-                                        <a href="/result.html?url=${encodeURIComponent(track.permalink_url)}" class="btn btn-primary btn-sm">دانلود</a>
-                                    </div>
-                                </div>
+
+            function displayTracks(tracks, container) {
+                const trackHtml = tracks.map(track => `
+                    <div class="card card-side bg-base-100 mb-4 border border-base-300 p-4 gap-4">
+                        <figure class="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+                            <img src="${track.artwork_url || 'https://via.placeholder.com/150'}" alt="${track.title}" class="object-cover w-full h-full"/>
+                        </figure>
+                        <div class="card-body p-0 flex-grow">
+                            <h3 class="text-lg font-semibold line-clamp-1">${track.title}</h3>
+                            <p class="text-sm text-base-content/80 line-clamp-1">${track.artist}</p>
+                            <div class="card-actions justify-end mt-2">
+                                <!-- Add play button if needed -->
+                                <a href="/result.html?url=${encodeURIComponent(track.permalink_url)}" class="btn btn-primary btn-sm">دانلود</a>
                             </div>
                         </div>
-                    `;
-                    tracksList.appendChild(trackCard);
-                });
+                    </div>
+                `).join('');
+                container.insertAdjacentHTML('beforeend', trackHtml); // Append new tracks
             }
         });
     </script>
