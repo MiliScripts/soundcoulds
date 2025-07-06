@@ -1,13 +1,36 @@
 // script.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Search functionality
+    // Theme toggle functionality (shared across all pages)
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        const html = document.documentElement;
+        
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.setAttribute('data-theme', 'dark');
+            themeToggle.checked = true;
+        } else {
+            html.setAttribute('data-theme', 'light');
+            themeToggle.checked = false;
+        }
+
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                html.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    }
+
+    // Search functionality (for index.html)
     const searchDrawer = document.getElementById('search-drawer');
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
     const searchButton = document.querySelector('a[href="#search"]');
     const closeSearchDrawer = document.getElementById('close-search-drawer');
     
-    // Open search drawer when "جستجو" is clicked
     if (searchButton) {
         searchButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -15,14 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Close search drawer
     if (closeSearchDrawer) {
         closeSearchDrawer.addEventListener('click', function() {
             searchDrawer.classList.add('hidden');
         });
     }
     
-    // Search function
     async function performSearch(query) {
         if (!query) return;
         
@@ -43,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Display search results
     function displayResults(tracks) {
         searchResults.innerHTML = tracks.map(track => `
             <div class="card card-side bg-base-100 shadow-xl mb-4">
@@ -59,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `).join('');
     }
     
-    // Handle search form submission
     const searchForm = document.getElementById('search-form');
     if (searchForm) {
         searchForm.addEventListener('submit', function(e) {
@@ -68,26 +87,4 @@ document.addEventListener('DOMContentLoaded', function() {
             performSearch(query);
         });
     }
-    
-    // Theme toggle functionality (same as before)
-    const themeToggle = document.getElementById('theme-toggle');
-    const html = document.documentElement;
-
-    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        html.setAttribute('data-theme', 'dark');
-        themeToggle.checked = true;
-    } else {
-        html.setAttribute('data-theme', 'light');
-        themeToggle.checked = false;
-    }
-
-    themeToggle.addEventListener('change', function() {
-        if (this.checked) {
-            html.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            html.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-        }
-    });
 });

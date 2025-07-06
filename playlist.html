@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پلی‌لیست - دانلودر صدا از ساندکلود</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'MainFont';
+            src: url('https://uploader-oss-mili.milaadfarzian.workers.dev/download/BQACAgQAAxkBAAIBuWgvk2eiesCCyNl2YmsWirMdTOpQAAIpFQACIid5UQiLWaIkcwABkjYE/documents/file_571.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'TitleFont';
+            src: url('https://uploader-oss-mili.milaadfarzian.workers.dev/download/BQACAgQAAxkBAAIBt2gvk2dd-8W_33Zvss5134ggdjGAAAInFQACIid5US4tNMF8cepJNgQ/documents/file_570.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body {
+            font-family: 'MainFont', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'TitleFont', sans-serif;
+        }
+        .track-card {
+            transition: all 0.2s ease;
+        }
+        .track-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <div class="navbar bg-base-100">
+        <div class="navbar-start">
+            <a class="btn btn-ghost text-xl">دانلودر صدا</a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="/">صفحه اصلی</a></li>
+                <li><a href="/user-id.html">دریافت شناسه کاربر</a></li>
+                <li><a href="/user-likes.html">دریافت لایک‌ها</a></li>
+                <li><a href="/user-tracks.html">دریافت آهنگ‌های کاربر</a></li>
+                <li><a href="/playlist.html">پلی‌لیست</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <label class="swap swap-rotate">
+                <input type="checkbox" id="theme-toggle" />
+                <svg class="swap-on fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/></svg>
+                <svg class="swap-off fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+            </label>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 flex-grow pb-20">
+        <div class="card bg-base-100 mx-auto max-w-2xl mb-8">
+            <div class="card-body">
+                <h1 class="card-title text-2xl">پلی‌لیست</h1>
+                <p>لینک پلی‌لیست ساندکلود را وارد کنید تا لیست آهنگ‌های آن نمایش داده شود:</p>
+
+                <form id="playlist-form" class="mt-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">لینک پلی‌لیست</span>
+                        </label>
+                        <input type="text" id="playlist-url-input" placeholder="https://soundcloud.com/user/sets/playlist" class="input input-bordered" required />
+                    </div>
+                    <div class="form-control mt-4">
+                        <button type="submit" class="btn btn-primary">دریافت پلی‌لیست</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="playlist-info" class="card bg-base-100 mx-auto max-w-2xl mb-8 hidden">
+            <div class="card-body">
+                <div class="flex items-center gap-4">
+                    <figure class="w-24 h-24 flex-shrink-0">
+                        <img id="playlist-artwork" src="" alt="Playlist Artwork" class="rounded-lg w-full h-full object-cover" />
+                    </figure>
+                    <div>
+                        <h2 id="playlist-title" class="text-xl font-bold"></h2>
+                        <p id="playlist-user" class="text-gray-500"></p>
+                        <p id="playlist-track-count" class="text-sm"></p>
+                        <p id="playlist-description" class="mt-2 text-sm"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading-container" class="text-center py-8 hidden">
+            <span class="loading loading-spinner loading-lg"></span>
+            <p class="mt-4">در حال دریافت اطلاعات پلی‌لیست...</p>
+        </div>
+
+        <div id="error-container" class="alert alert-error mx-auto max-w-2xl hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span id="error-text"></span>
+        </div>
+
+        <div id="results-container" class="hidden">
+            <h2 class="text-xl font-bold mb-4">آهنگ‌های پلی‌لیست</h2>
+            <div id="tracks-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 mb-4 z-50 lg:hidden w-full px-4">
+        <button class="btn w-full text-center py-6 rounded-xl px-9" onclick="document.getElementById('mobile_menu_modal').showModal()">
+            <span>منوی اصلی</span>
+        </button>
+    </div>
+
+    <dialog id="mobile_menu_modal" class="modal modal-bottom sm:modal-middle">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">منوی اصلی</h3>
+        <ul class="menu w-full">
+          <li><a href="/">صفحه اصلی</a></li>
+          <li><a href="/user-id.html">دریافت شناسه کاربر</a></li>
+          <li><a href="/user-likes.html">دریافت لایک‌ها</a></li>
+          <li><a href="/user-tracks.html">دریافت آهنگ‌های کاربر</a></li>
+          <li><a href="/playlist.html">پلی‌لیست</a></li>
+        </ul>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn">بستن</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+
+            if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.checked = true;
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.checked = false;
+            }
+
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    html.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    html.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            const playlistForm = document.getElementById('playlist-form');
+            const playlistUrlInput = document.getElementById('playlist-url-input');
+            const loadingContainer = document.getElementById('loading-container');
+            const errorContainer = document.getElementById('error-container');
+            const errorText = document.getElementById('error-text');
+            const resultsContainer = document.getElementById('results-container');
+            const tracksList = document.getElementById('tracks-list');
+            const playlistInfo = document.getElementById('playlist-info');
+            const playlistArtwork = document.getElementById('playlist-artwork');
+            const playlistTitle = document.getElementById('playlist-title');
+            const playlistUser = document.getElementById('playlist-user');
+            const playlistTrackCount = document.getElementById('playlist-track-count');
+            const playlistDescription = document.getElementById('playlist-description');
+
+            if (playlistForm) {
+                playlistForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const playlistUrl = playlistUrlInput.value.trim();
+
+                    if (!playlistUrl) return;
+
+                    tracksList.innerHTML = '';
+                    resultsContainer.classList.add('hidden');
+                    errorContainer.classList.add('hidden');
+                    playlistInfo.classList.add('hidden');
+                    loadingContainer.classList.remove('hidden');
+
+                    try {
+                        const response = await fetch(`https://autumn-waterfall-ddac.milaadfarzian.workers.dev/playlist/${encodeURIComponent(playlistUrl)}`);
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(data.message || 'خطا در دریافت اطلاعات پلی‌لیست');
+                        }
+
+                        if (data.playlist_info) {
+                            playlistArtwork.src = data.playlist_info.artwork_url || 'https://via.placeholder.com/150';
+                            playlistTitle.textContent = data.playlist_info.title || 'پلی‌لیست بدون عنوان';
+                            playlistUser.textContent = data.playlist_info.user?.username || 'کاربر ناشناس';
+                            playlistTrackCount.textContent = `${data.playlist_info.track_count || 0} آهنگ`;
+                            playlistDescription.textContent = data.playlist_info.description || '';
+                            playlistInfo.classList.remove('hidden');
+                        }
+
+                        if (data.tracks && data.tracks.length > 0) {
+                            displayTracks(data.tracks);
+                            resultsContainer.classList.remove('hidden');
+                        } else {
+                            throw new Error('پلی‌لیست خالی است یا آهنگ‌ها قابل دسترسی نیستند');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching playlist:', error);
+                        errorText.textContent = error.message || 'خطا در دریافت پلی‌لیست';
+                        errorContainer.classList.remove('hidden');
+                    } finally {
+                        loadingContainer.classList.add('hidden');
+                    }
+                });
+            }
+
+            function displayTracks(tracks) {
+                tracksList.innerHTML = '';
+
+                tracks.forEach(track => {
+                    const trackCard = document.createElement('div');
+                    trackCard.className = 'card bg-base-100 track-card';
+                    trackCard.innerHTML = `
+                        <div class="card-body p-4">
+                            <div class="flex items-center gap-4">
+                                <figure class="w-16 h-16 flex-shrink-0">
+                                    <img src="${track.artwork_url || 'https://via.placeholder.com/150'}" alt="${track.title}" class="rounded-lg w-full h-full object-cover" />
+                                </figure>
+                                <div class="flex-grow">
+                                    <h3 class="font-semibold line-clamp-1">${track.title}</h3>
+                                    <p class="text-sm text-gray-500 line-clamp-1">${track.artist}</p>
+                                    <div class="card-actions justify-end mt-2">
+                                        <a href="/result.html?url=${encodeURIComponent(track.permalink_url)}" class="btn btn-primary btn-sm">دانلود</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    tracksList.appendChild(trackCard);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
