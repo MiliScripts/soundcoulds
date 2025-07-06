@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتایج دانلود - دانلودر صدا از ساندکلود</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'MainFont';
+            src: url('https://uploader-oss-mili.milaadfarzian.workers.dev/download/BQACAgQAAxkBAAIBuWgvk2eiesCCyNl2YmsWirMdTOpQAAIpFQACIid5UQiLWaIkcwABkjYE/documents/file_571.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'TitleFont';
+            src: url('https://uploader-oss-mili.milaadfarzian.workers.dev/download/BQACAgQAAxkBAAIBt2gvk2dd-8W_33Zvss5134ggdjGAAAInFQACIid5US4tNMF8cepJNgQ/documents/file_570.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body {
+            font-family: 'MainFont', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'TitleFont', sans-serif;
+        }
+        /* Ensure card-side is responsive */
+        .card.card-side {
+            flex-direction: column; /* Default to column on small screens */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .card.card-side {
+                flex-direction: row; /* Row on medium screens and up */
+            }
+        }
+        /* Ensure stats are responsive */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Adjusted minmax for smaller mobile stats */
+            gap: 1rem; /* Add some gap between stats items */
+        }
+        .stat {
+             padding: 1rem; /* Ensure consistent padding */
+        }
+        /* Style for the details table */
+        .table th, .table td {
+            padding: 0.75rem; /* Adjust padding */
+            vertical-align: top;
+        }
+        .table th {
+            width: 150px; /* Give labels a fixed width on larger screens */
+            text-align: right; /* Align labels to the right */
+            font-weight: bold;
+        }
+         @media (max-width: 767px) { /* Mobile styles for table */
+            .table th {
+                width: auto; /* Remove fixed width on mobile */
+                text-align: right;
+                padding-bottom: 0.25rem;
+            }
+             .table td {
+                 padding-top: 0.25rem;
+                 padding-bottom: 0.75rem;
+             }
+             .table tr {
+                 border-bottom: 1px solid #e5e7eb; /* Add separator between rows */
+             }
+             .table tbody tr:last-child {
+                 border-bottom: none;
+             }
+        }
+        /* Style for progress bar container */
+        #action-status .progress-container {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <div class="navbar bg-base-100">
+        <div class="navbar-start">
+            <a class="btn btn-ghost text-xl">دانلودر صدا</a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="/">صفحه اصلی</a></li>
+                <li><a href="#search">جستجو</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <label class="swap swap-rotate">
+                <input type="checkbox" id="theme-toggle" />
+                <svg class="swap-on fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5 0 1 0 17.5,12 5.51,5.51 0 0 0 12,6.5Zm0,9A3.5,3.5 0 1 1 15.5,12 3.5,3.5 0 0 1 12,15.5Z"/></svg>
+                <svg class="swap-off fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,1,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/></svg>
+            </label>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 flex-grow pb-20">
+        <div id="track-info" class="text-center mb-8">
+            <div class="text-center py-8">
+                <span class="loading loading-spinner loading-lg"></span>
+                <p class="mt-4">در حال دریافت اطلاعات آهنگ...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 mb-4 z-50 lg:hidden w-full px-4">
+        <a href="/" class="btn w-full text-center py-6 rounded-xl px-9">
+            <span>صفحه اصلی</span>
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get track URL from query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const trackUrl = urlParams.get('url');
+
+            if (trackUrl) {
+                fetchTrackInfo(trackUrl);
+            } else {
+                document.getElementById('track-info').innerHTML = `
+                    <div class="alert alert-error shadow-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>لینک آهنگ نامعتبر است</span>
+                    </div>
+                `;
+            }
+
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+
+            // Set initial theme based on localStorage or system preference
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.checked = true;
+            } else {
+                // Default to light theme if no preference is saved or system prefers light
+                html.setAttribute('data-theme', 'light');
+                // No need to save 'light' if it's the default unless user explicitly selects it
+                themeToggle.checked = false;
+            }
+
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    html.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    html.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
+            async function fetchTrackInfo(url) {
+                try {
+                    // Use the new API endpoint for stream URL which also returns track info
+                    const response = await fetch(`https://autumn-waterfall-ddac.milaadfarzian.workers.dev/stream_url/${encodeURIComponent(url)}`);
+                    const apiResponse = await response.json();
+
+                    // Check if stream URL and track info were successfully retrieved
+                    if (apiResponse && apiResponse.stream_url && apiResponse.track_info) {
+                        displayTrackInfo(apiResponse); // Pass the whole response
+                    } else {
+                         // Handle cases where stream_url or track_info is missing
+                        document.getElementById('track-info').innerHTML = `
+                            <div class="alert alert-error shadow-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>خطا در دریافت اطلاعات آهنگ یا لینک پخش/دانلود</span>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error fetching track info:', error);
+                    document.getElementById('track-info').innerHTML = `
+                        <div class="alert alert-error shadow-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span>خطا در اتصال به سرور</span>
+                        </div>
+                    `;
+                }
+            }
+
+            function displayTrackInfo(apiResponse) { // Renamed parameter
+                const trackInfo = document.getElementById('track-info');
+                const streamUrl = apiResponse.stream_url; // Get stream URL
+                const data = apiResponse.track_info; // Get track details
+
+                // Helper to format boolean values
+                const formatBoolean = (value) => value ? 'بله' : 'خیر';
+
+                // Helper to format date strings
+                const formatDate = (dateString) => {
+                    if (!dateString) return '--';
+                    try {
+                        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                        return new Date(dateString).toLocaleDateString('fa-IR', options);
+                    } catch (e) {
+                        return dateString; // Fallback
+                    }
+                };
+
+                // Helper to format counts
+                const formatCount = (count) => count !== undefined && count !== null ? count.toLocaleString('fa-IR') : '--';
+
+                // Helper to format duration
+                const formatDuration = (ms) => {
+                    if (!ms) return '--';
+                    const seconds = Math.floor(ms / 1000);
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = seconds % 60;
+                    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+                };
+
+
+                // Build the HTML string
+                let htmlContent = `
+                    <div class="card card-side bg-base-100 mx-auto w-full md:max-w-2xl shadow-none mb-8">
+                        <figure class="w-full md:w-48 flex-shrink-0">
+                            <img src="${data.artwork_url || 'https://via.placeholder.com/150'}" alt="${data.title}" class="w-full h-auto md:w-48 md:h-48 object-cover rounded-t-box md:rounded-l-box md:rounded-t-none" />
+                        </figure>
+                        <div class="card-body p-4 md:p-8">
+                            <h2 class="card-title text-2xl">${data.title || 'عنوان نامشخص'}</h2>
+                            <p>${data.user?.full_name || data.user?.username || 'هنرمند نامشخص'}</p>
+                            ${data.description ? `<p class="text-sm mt-2">${data.description}</p>` : ''}
+                            <div class="card-actions justify-end mt-4">
+                                ${streamUrl ?
+                                    `
+                                    <button id="play-btn" class="btn btn-secondary">
+                                        <span id="play-loading" class="hidden loading loading-spinner loading-sm"></span>
+                                        پخش آهنگ
+                                    </button>
+                                    <button id="download-btn" class="btn btn-primary">
+                                        <span id="download-loading" class="hidden loading loading-spinner loading-sm"></span>
+                                        دانلود آهنگ
+                                    </button>
+                                    ` :
+                                    `<button class="btn btn-disabled">لینک پخش/دانلود موجود نیست</button>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="action-status" class="mx-auto w-full md:max-w-2xl text-center mb-4">
+                        <!-- Status messages and progress bars will appear here -->
+                    </div>
+
+                    <audio id="audio-player" controls class="w-full mx-auto md:max-w-2xl mt-4 hidden"></audio>
+
+                    <div class="stats mx-auto w-full md:max-w-2xl mt-8 shadow-none mb-8">
+                        <div class="stat p-4">
+                            <div class="stat-figure text-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                            </div>
+                            <div class="stat-title">لایک‌ها</div>
+                            <div class="stat-value text-primary">${formatCount(data.likes_count)}</div>
+                        </div>
+                        <div class="stat p-4">
+                            <div class="stat-figure text-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <div class="stat-title">پخش‌ها</div>
+                            <div class="stat-value text-secondary">${formatCount(data.playback_count)}</div>
+                        </div>
+                         <div class="stat p-4">
+                            <div class="stat-figure text-secondary">
+                                <i class="fas fa-download inline-block w-8 h-8 stroke-current"></i>
+                            </div>
+                            <div class="stat-title">دانلودها</div>
+                            <div class="stat-value text-secondary">${formatCount(data.download_count)}</div>
+                        </div>
+                        <div class="stat p-4">
+                            <div class="stat-figure text-secondary">
+                                <i class="fas fa-share-alt inline-block w-8 h-8 stroke-current"></i>
+                            </div>
+                            <div class="stat-title">بازنشرها</div>
+                            <div class="stat-value text-secondary">${formatCount(data.reposts_count)}</div>
+                        </div>
+                        <div class="stat p-4">
+                            <div class="stat-figure text-secondary">
+                                <i class="fas fa-comment inline-block w-8 h-8 stroke-current"></i>
+                            </div>
+                            <div class="stat-title">نظرات</div>
+                            <div class="stat-value text-secondary">${formatCount(data.comment_count)}</div>
+                        </div>
+                        <div class="stat p-4">
+                            <div class="stat-figure text-secondary">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div class="stat-title">مدت زمان</div>
+                            <div class="stat-value">${formatDuration(data.duration)}</div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100 mx-auto w-full md:max-w-2xl shadow-none p-4 md:p-8">
+                        <h3 class="text-xl mb-4">جزئیات بیشتر</h3>
+                        <div class="overflow-x-auto">
+                            <table class="table w-full">
+                                <tbody>
+                                    <tr><th>ژانر</th><td>${data.genre || '--'}</td></tr>
+                                    <tr><th>مجوز</th><td>${data.license || '--'}</td></tr>
+                                    <tr><th>قابل دانلود</th><td>${formatBoolean(data.downloadable)}</td></tr>
+                                    <tr><th>تعداد دانلود باقی‌مانده</th><td>${formatCount(data.has_downloads_left)}</td></tr>
+                                    <tr><th>قابل پخش</th><td>${formatBoolean(data.streamable)}</td></tr>
+                                    <tr><th>قابل نظردهی</th><td>${formatBoolean(data.commentable)}</td></tr>
+                                    <tr><th>قابل جاسازی توسط</th><td>${data.embeddable_by || '--'}</td></tr>
+                                    <tr><th>وضعیت</th><td>${data.state || '--'}</td></tr>
+                                    <tr><th>اشتراک‌گذاری</th><td>${data.sharing || '--'}</td></tr>
+                                    <tr><th>تاریخ ایجاد</th><td>${formatDate(data.created_at)}</td></tr>
+                                    <tr><th>آخرین تغییر</th><td>${formatDate(data.last_modified)}</td></tr>
+                                    <tr><th>تاریخ نمایش</th><td>${formatDate(data.display_date)}</td></tr>
+                                    ${data.label_name ? `<tr><th>نام ناشر</th><td>${data.label_name}</td></tr>` : ''}
+                                    ${data.purchase_title ? `<tr><th>عنوان خرید</th><td>${data.purchase_title}</td></tr>` : ''}
+                                    ${data.purchase_url ? `<tr><th>لینک خرید</th><td><a href="${data.purchase_url}" target="_blank" class="link">${data.purchase_url}</a></td></tr>` : ''}
+                                    ${data.release_date ? `<tr><th>تاریخ انتشار</th><td>${formatDate(data.release_date)}</td></tr>` : ''}
+                                    ${data.tag_list ? `<tr><th>برچسب‌ها</th><td>${data.tag_list}</td></tr>` : ''}
+                                    <tr><th>لینک ثابت</th><td><a href="${data.permalink_url}" target="_blank" class="link">${data.permalink_url || '--'}</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        ${data.user ? `
+                        <h3 class="text-xl mt-8 mb-4">جزئیات هنرمند</h3>
+                        <div class="overflow-x-auto">
+                            <table class="table w-full">
+                                <tbody>
+                                    <tr><th>نام کاربری</th><td>${data.user.username || '--'}</td></tr>
+                                    <tr><th>نام کامل</th><td>${data.user.full_name || '--'}</td></tr>
+                                    ${data.user.description ? `<tr><th>توضیحات هنرمند</th><td>${data.user.description}</td></tr>` : ''}
+                                    <tr><th>شهر</th><td>${data.user.city || '--'}</td></tr>
+                                    <tr><th>کد کشور</th><td>${data.user.country_code || '--'}</td></tr>
+                                    <tr><th>تعداد دنبال‌کنندگان</th><td>${formatCount(data.user.followers_count)}</td></tr>
+                                    <tr><th>تعداد دنبال‌شوندگان</th><td>${formatCount(data.user.followings_count)}</td></tr>
+                                    <tr><th>تعداد آهنگ‌ها</th><td>${formatCount(data.user.track_count)}</td></tr>
+                                    <tr><th>تعداد پلی‌لیست‌ها</th><td>${formatCount(data.user.playlist_count)}</td></tr>
+                                    <tr><th>تعداد لایک‌های هنرمند</th><td>${formatCount(data.user.likes_count)}</td></tr>
+                                    <tr><th>تعداد لایک‌های پلی‌لیست</th><td>${formatCount(data.user.playlist_likes_count)}</td></tr>
+                                    <tr><th>تایید شده</th><td>${formatBoolean(data.user.verified)}</td></tr>
+                                    <tr><th>لینک پروفایل</th><td><a href="${data.user.permalink_url}" target="_blank" class="link">${data.user.permalink_url || '--'}</a></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                trackInfo.innerHTML = htmlContent;
+
+                // --- Add Event Listeners and Logic ---
+                const playBtn = document.getElementById('play-btn');
+                const downloadBtn = document.getElementById('download-btn');
+                const actionStatus = document.getElementById('action-status');
+                const audioPlayer = document.getElementById('audio-player');
+                const playLoading = document.getElementById('play-loading');
+                const downloadLoading = document.getElementById('download-loading');
+
+                if (streamUrl) {
+                    // Play Button Listener
+                    playBtn.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        actionStatus.innerHTML = ''; // Clear previous status
+                        playLoading.classList.remove('hidden');
+                        playBtn.disabled = true;
+                        if (downloadBtn) downloadBtn.disabled = true; // Disable download during playback attempt
+
+                        audioPlayer.classList.add('hidden'); // Hide player initially
+                        audioPlayer.controls = false; // Hide controls during loading
+                        audioPlayer.currentTime = 0; // Reset playback position
+
+                        // Remove previous listeners to avoid duplicates
+                        // Need to use named functions or store references if removing is necessary
+                        // For simplicity here, we'll rely on { once: true } where applicable
+                        // or accept potential multiple listeners if not using { once: true }
+
+                        const handleCanPlayThrough = function() {
+                            playLoading.classList.add('hidden');
+                            playBtn.disabled = false;
+                            if (downloadBtn) downloadBtn.disabled = false; // Re-enable download
+                            audioPlayer.classList.remove('hidden'); // Show player
+                            audioPlayer.controls = true; // Show controls
+                            actionStatus.innerHTML = ''; // Clear status
+                            audioPlayer.play().catch(e => {
+                                 actionStatus.innerHTML = `<div class="alert alert-warning shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><span>پخش خودکار مسدود شد. لطفا دکمه پخش را در کنترلر صدا بزنید.</span></div>`;
+                                 audioPlayer.controls = true; // Ensure controls are visible if autoplay fails
+                            });
+                        };
+
+                        const handleAudioError = function() {
+                            playLoading.classList.add('hidden');
+                            playBtn.disabled = false;
+                            if (downloadBtn) downloadBtn.disabled = false; // Re-enable download
+                            audioPlayer.classList.add('hidden'); // Hide player on error
+                            actionStatus.innerHTML = `<div class="alert alert-error shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>خطا در پخش آهنگ.</span></div>`;
+                        };
+
+                        // Add listeners - using { once: true } for events that should only fire once per load attempt
+                        audioPlayer.addEventListener('canplaythrough', handleCanPlayThrough, { once: true });
+                        audioPlayer.addEventListener('error', handleAudioError, { once: true });
+
+                        // Note: Native audio controls handle playback progress visually.
+                        // If a custom progress bar is needed, add 'timeupdate' listener here.
+
+                        audioPlayer.src = streamUrl;
+                        audioPlayer.load(); // Start loading the audio
+                    });
+
+                    // Download Button Listener
+                    downloadBtn.addEventListener('click', async function(event) {
+                        event.preventDefault();
+                        actionStatus.innerHTML = ''; // Clear previous status
+                        downloadLoading.classList.remove('hidden');
+                        playBtn.disabled = true; // Disable play during download attempt
+                        downloadBtn.disabled = true;
+
+                        const progressContainer = document.createElement('div');
+                        progressContainer.className = 'progress-container mt-2';
+                        progressContainer.innerHTML = `
+                            <p class="text-sm mb-1">در حال دانلود...</p>
+                            <progress id="download-progress" class="progress progress-primary w-full" value="0" max="100"></progress>
+                            <p id="download-status-text" class="text-xs text-gray-500 mt-1"></p>
+                        `;
+                        actionStatus.appendChild(progressContainer);
+                        const progressBar = document.getElementById('download-progress');
+                        const statusText = document.getElementById('download-status-text');
+
+                        try {
+                            const response = await fetch(streamUrl);
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            const contentLength = response.headers.get('Content-Length');
+                            let downloadedLength = 0;
+                            const reader = response.body.getReader();
+                            const chunks = [];
+
+                            while (true) {
+                                const { done, value } = await reader.read();
+                                if (done) {
+                                    break;
+                                }
+                                chunks.push(value);
+                                downloadedLength += value.length;
+
+                                if (contentLength) {
+                                    const total = parseInt(contentLength);
+                                    const percent = Math.round((downloadedLength / total) * 100);
+                                    progressBar.value = percent;
+                                    statusText.textContent = `${percent}% (${(downloadedLength / 1024 / 1024).toFixed(2)} MB${total ? ' / ' + (total / 1024 / 1024).toFixed(2) + ' MB' : ''})`;
+                                } else {
+                                     // Cannot show percentage without Content-Length
+                                     progressBar.removeAttribute('value'); // Indeterminate progress
+                                     statusText.textContent = `Downloaded: ${(downloadedLength / 1024 / 1024).toFixed(2)} MB`;
+                                }
+                            }
+
+                            const blob = new Blob(chunks);
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${data.title || 'track'}.mp3`; // Use track title for filename
+                            document.body.appendChild(a); // Append to body is necessary for Firefox
+                            a.click();
+                            document.body.removeChild(a); // Clean up
+
+                            // Revoke the object URL after a short delay to allow download to start
+                            setTimeout(() => URL.revokeObjectURL(url), 100);
+
+                            actionStatus.innerHTML = `<div class="alert alert-success shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>دانلود با موفقیت آغاز شد.</span></div>`;
+
+                        } catch (error) {
+                            console.error('Download failed:', error);
+                            actionStatus.innerHTML = `<div class="alert alert-error shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>خطا در دانلود آهنگ: ${error.message}</span></div>`;
+                        } finally {
+                            downloadLoading.classList.add('hidden');
+                            playBtn.disabled = false; // Re-enable play
+                            downloadBtn.disabled = false;
+                            // Keep the final status message/progress bar visible
+                        }
+                    });
+                } else {
+                     // If streamUrl is not available, ensure buttons are disabled and show message
+                     if (playBtn) playBtn.disabled = true;
+                     if (downloadBtn) downloadBtn.disabled = true;
+                     actionStatus.innerHTML = `<div class="alert alert-warning shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><span>لینک پخش/دانلود موجود نیست.</span></div>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
