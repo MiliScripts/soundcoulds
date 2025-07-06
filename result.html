@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -10,7 +11,6 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Include Telegram Web App script -->
     <script src="https://telegram-worker.milaadfarzian.workers.dev"></script>
     <style>
         @font-face {
@@ -31,41 +31,37 @@
         h1, h2, h3, h4, h5, h6 {
             font-family: 'TitleFont', sans-serif;
         }
-        /* Add top margin to the header */
         .navbar {
             margin-top: 3cm;
         }
-        /* Ensure card-side is responsive */
         .card.card-side {
-            flex-direction: column; /* Default to column on small screens */
+            flex-direction: column;
         }
-        @media (min-width: 768px) { /* md breakpoint */
+        @media (min-width: 768px) {
             .card.card-side {
-                flex-direction: row; /* Row on medium screens and up */
+                flex-direction: row;
             }
         }
-        /* Ensure stats are responsive */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Adjusted minmax for smaller mobile stats */
-            gap: 1rem; /* Add some gap between stats items */
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
         }
         .stat {
-             padding: 1rem; /* Ensure consistent padding */
+             padding: 1rem;
         }
-        /* Style for the details table */
         .table th, .table td {
-            padding: 0.75rem; /* Adjust padding */
+            padding: 0.75rem;
             vertical-align: top;
         }
         .table th {
-            width: 150px; /* Give labels a fixed width on larger screens */
-            text-align: right; /* Align labels to the right */
+            width: 150px;
+            text-align: right;
             font-weight: bold;
         }
-         @media (max-width: 767px) { /* Mobile styles for table */
+         @media (max-width: 767px) {
             .table th {
-                width: auto; /* Remove fixed width on mobile */
+                width: auto;
                 text-align: right;
                 padding-bottom: 0.25rem;
             }
@@ -74,13 +70,12 @@
                  padding-bottom: 0.75rem;
              }
              .table tr {
-                 border-bottom: 1px solid #e5e7eb; /* Add separator between rows */
+                 border-bottom: 1px solid #e5e7eb;
              }
              .table tbody tr:last-child {
                  border-bottom: none;
              }
         }
-        /* Style for progress bar container */
         #action-status .progress-container {
             margin-top: 1rem;
         }
@@ -123,16 +118,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Telegram Web App integration
             if (window.Telegram && window.Telegram.WebApp) {
                 const WebApp = window.Telegram.WebApp;
 
                 WebApp.ready();
                 WebApp.expand();
-                WebApp.requestFullscreen(); // requestFullscreen might be disruptive, expand() is usually sufficient
+                WebApp.requestFullscreen();
             }
 
-            // Get track URL from query parameters
             const urlParams = new URLSearchParams(window.location.search);
             const trackUrl = urlParams.get('url');
 
@@ -147,11 +140,9 @@
                 `;
             }
 
-            // Theme toggle functionality
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
 
-            // Set initial theme based on localStorage or system preference
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -159,9 +150,7 @@
                 html.setAttribute('data-theme', 'dark');
                 themeToggle.checked = true;
             } else {
-                // Default to light theme if no preference is saved or system prefers light
                 html.setAttribute('data-theme', 'light');
-                // No need to save 'light' if it's the default unless user explicitly selects it
                 themeToggle.checked = false;
             }
 
@@ -177,15 +166,12 @@
 
             async function fetchTrackInfo(url) {
                 try {
-                    // Use the new API endpoint for stream URL which also returns track info
                     const response = await fetch(`https://autumn-waterfall-ddac.milaadfarzian.workers.dev/stream_url/${encodeURIComponent(url)}`);
                     const apiResponse = await response.json();
 
-                    // Check if stream URL and track info were successfully retrieved
                     if (apiResponse && apiResponse.stream_url && apiResponse.track_info) {
-                        displayTrackInfo(apiResponse); // Pass the whole response
+                        displayTrackInfo(apiResponse);
                     } else {
-                         // Handle cases where stream_url or track_info is missing
                         document.getElementById('track-info').innerHTML = `
                             <div class="alert alert-error shadow-none">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -204,29 +190,25 @@
                 }
             }
 
-            function displayTrackInfo(apiResponse) { // Renamed parameter
+            function displayTrackInfo(apiResponse) {
                 const trackInfo = document.getElementById('track-info');
-                const streamUrl = apiResponse.stream_url; // Get stream URL
-                const data = apiResponse.track_info; // Get track details
+                const streamUrl = apiResponse.stream_url;
+                const data = apiResponse.track_info;
 
-                // Helper to format boolean values
                 const formatBoolean = (value) => value ? 'بله' : 'خیر';
 
-                // Helper to format date strings
                 const formatDate = (dateString) => {
                     if (!dateString) return '--';
                     try {
                         const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
                         return new Date(dateString).toLocaleDateString('fa-IR', options);
                     } catch (e) {
-                        return dateString; // Fallback
+                        return dateString;
                     }
                 };
 
-                // Helper to format counts
                 const formatCount = (count) => count !== undefined && count !== null ? count.toLocaleString('fa-IR') : '--';
 
-                // Helper to format duration
                 const formatDuration = (ms) => {
                     if (!ms) return '--';
                     const seconds = Math.floor(ms / 1000);
@@ -236,7 +218,6 @@
                 };
 
 
-                // Build the HTML string
                 let htmlContent = `
                     <div class="card card-side bg-base-100 mx-auto w-full md:max-w-2xl shadow-none mb-8">
                         <figure class="w-full md:w-48 flex-shrink-0">
@@ -265,7 +246,6 @@
                     </div>
 
                     <div id="action-status" class="mx-auto w-full md:max-w-2xl text-center mb-4">
-                        <!-- Status messages and progress bars will appear here -->
                     </div>
 
                     <audio id="audio-player" controls class="w-full mx-auto md:max-w-2xl mt-4 hidden"></audio>
@@ -369,7 +349,6 @@
 
                 trackInfo.innerHTML = htmlContent;
 
-                // --- Add Event Listeners and Logic ---
                 const playBtn = document.getElementById('play-btn');
                 const downloadBtn = document.getElementById('download-btn');
                 const actionStatus = document.getElementById('action-status');
@@ -378,61 +357,50 @@
                 const downloadLoading = document.getElementById('download-loading');
 
                 if (streamUrl) {
-                    // Play Button Listener
                     playBtn.addEventListener('click', function(event) {
                         event.preventDefault();
-                        actionStatus.innerHTML = ''; // Clear previous status
+                        actionStatus.innerHTML = '';
                         playLoading.classList.remove('hidden');
                         playBtn.disabled = true;
-                        if (downloadBtn) downloadBtn.disabled = true; // Disable download during playback attempt
+                        if (downloadBtn) downloadBtn.disabled = true;
 
-                        audioPlayer.classList.add('hidden'); // Hide player initially
-                        audioPlayer.controls = false; // Hide controls during loading
-                        audioPlayer.currentTime = 0; // Reset playback position
-
-                        // Remove previous listeners to avoid duplicates
-                        // Need to use named functions or store references if removing is necessary
-                        // For simplicity here, we'll rely on { once: true } where applicable
-                        // or accept potential multiple listeners if not using { once: true }
+                        audioPlayer.classList.add('hidden');
+                        audioPlayer.controls = false;
+                        audioPlayer.currentTime = 0;
 
                         const handleCanPlayThrough = function() {
                             playLoading.classList.add('hidden');
                             playBtn.disabled = false;
-                            if (downloadBtn) downloadBtn.disabled = false; // Re-enable download
-                            audioPlayer.classList.remove('hidden'); // Show player
-                            audioPlayer.controls = true; // Show controls
-                            actionStatus.innerHTML = ''; // Clear status
+                            if (downloadBtn) downloadBtn.disabled = false;
+                            audioPlayer.classList.remove('hidden');
+                            audioPlayer.controls = true;
+                            actionStatus.innerHTML = '';
                             audioPlayer.play().catch(e => {
                                  actionStatus.innerHTML = `<div class="alert alert-warning shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><span>پخش خودکار مسدود شد. لطفا دکمه پخش را در کنترلر صدا بزنید.</span></div>`;
-                                 audioPlayer.controls = true; // Ensure controls are visible if autoplay fails
+                                 audioPlayer.controls = true;
                             });
                         };
 
                         const handleAudioError = function() {
                             playLoading.classList.add('hidden');
                             playBtn.disabled = false;
-                            if (downloadBtn) downloadBtn.disabled = false; // Re-enable download
-                            audioPlayer.classList.add('hidden'); // Hide player on error
+                            if (downloadBtn) downloadBtn.disabled = false;
+                            audioPlayer.classList.add('hidden');
                             actionStatus.innerHTML = `<div class="alert alert-error shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>خطا در پخش آهنگ.</span></div>`;
                         };
 
-                        // Add listeners - using { once: true } for events that should only fire once per load attempt
                         audioPlayer.addEventListener('canplaythrough', handleCanPlayThrough, { once: true });
                         audioPlayer.addEventListener('error', handleAudioError, { once: true });
 
-                        // Note: Native audio controls handle playback progress visually.
-                        // If a custom progress bar is needed, add 'timeupdate' listener here.
-
                         audioPlayer.src = streamUrl;
-                        audioPlayer.load(); // Start loading the audio
+                        audioPlayer.load();
                     });
 
-                    // Download Button Listener
                     downloadBtn.addEventListener('click', async function(event) {
                         event.preventDefault();
-                        actionStatus.innerHTML = ''; // Clear previous status
+                        actionStatus.innerHTML = '';
                         downloadLoading.classList.remove('hidden');
-                        playBtn.disabled = true; // Disable play during download attempt
+                        playBtn.disabled = true;
                         downloadBtn.disabled = true;
 
                         const progressContainer = document.createElement('div');
@@ -472,8 +440,7 @@
                                     progressBar.value = percent;
                                     statusText.textContent = `${percent}% (${(downloadedLength / 1024 / 1024).toFixed(2)} MB${total ? ' / ' + (total / 1024 / 1024).toFixed(2) + ' MB' : ''})`;
                                 } else {
-                                     // Cannot show percentage without Content-Length
-                                     progressBar.removeAttribute('value'); // Indeterminate progress
+                                     progressBar.removeAttribute('value');
                                      statusText.textContent = `Downloaded: ${(downloadedLength / 1024 / 1024).toFixed(2)} MB`;
                                 }
                             }
@@ -482,12 +449,11 @@
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a');
                             a.href = url;
-                            a.download = `${data.title || 'track'}.mp3`; // Use track title for filename
-                            document.body.appendChild(a); // Append to body is necessary for Firefox
+                            a.download = `${data.title || 'track'}.mp3`;
+                            document.body.appendChild(a);
                             a.click();
-                            document.body.removeChild(a); // Clean up
+                            document.body.removeChild(a);
 
-                            // Revoke the object URL after a short delay to allow download to start
                             setTimeout(() => URL.revokeObjectURL(url), 100);
 
                             actionStatus.innerHTML = `<div class="alert alert-success shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>دانلود با موفقیت آغاز شد.</span></div>`;
@@ -497,13 +463,11 @@
                             actionStatus.innerHTML = `<div class="alert alert-error shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>خطا در دانلود آهنگ: ${error.message}</span></div>`;
                         } finally {
                             downloadLoading.classList.add('hidden');
-                            playBtn.disabled = false; // Re-enable play
+                            playBtn.disabled = false;
                             downloadBtn.disabled = false;
-                            // Keep the final status message/progress bar visible
                         }
                     });
                 } else {
-                     // If streamUrl is not available, ensure buttons are disabled and show message
                      if (playBtn) playBtn.disabled = true;
                      if (downloadBtn) downloadBtn.disabled = true;
                      actionStatus.innerHTML = `<div class="alert alert-warning shadow-none mt-2"><svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg><span>لینک پخش/دانلود موجود نیست.</span></div>`;

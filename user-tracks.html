@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -33,19 +34,18 @@
         .track-card:hover {
             transform: translateY(-2px);
         }
-        /* Adjust drawer side height and width for bottom drawer */
         .drawer-side {
-            max-height: 80vh; /* Limit height to prevent covering the whole screen */
-            overflow-y: auto; /* Add scrolling if content exceeds max height */
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .navbar {
             margin-top: 3cm;
         }
 
-        
+
         .drawer-side > .menu {
-             width: 100%; /* Make menu take full width in bottom drawer */
+             width: 100%;
         }
     </style>
 </head>
@@ -109,12 +109,10 @@
         </div>
     </div>
 
-    <!-- Results Drawer -->
     <dialog id="tracks_results_modal" class="modal modal-bottom">
       <div class="modal-box flex flex-col max-h-screen">
         <h3 class="font-bold text-lg mb-4">آهنگ‌های کاربر</h3>
         <div id="tracks-results-container" class="py-4 overflow-y-auto flex-grow">
-            <!-- Tracks will be loaded here -->
         </div>
         <div class="mt-8 text-center">
             <button id="load-more-btn" class="btn btn-primary hidden">نمایش بیشتر</button>
@@ -154,13 +152,12 @@
 
     <script src="https://telegram-worker.milaadfarzian.workers.dev"></script>
     <script>
-        // Check if running inside Telegram Web App
         if (window.Telegram && window.Telegram.WebApp) {
             const WebApp = window.Telegram.WebApp;
 
             WebApp.ready();
             WebApp.expand();
-            WebApp.requestFullscreen(); // requestFullscreen might be too aggressive, expand() is usually sufficient
+            WebApp.requestFullscreen();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -192,7 +189,6 @@
             const errorContainer = document.getElementById('error-container');
             const errorText = document.getElementById('error-text');
 
-            // Elements for modal results
             const tracksResultsModal = document.getElementById('tracks_results_modal');
             const tracksResultsContainer = document.getElementById('tracks-results-container');
             const loadMoreBtn = document.getElementById('load-more-btn');
@@ -200,38 +196,33 @@
 
             let currentUserId = null;
             let currentOffset = 0;
-            const defaultLimit = 20; // Default limit for API calls and load more
-            let allTrackUrls = []; // Array to store all fetched track URLs
+            const defaultLimit = 20;
+            let allTrackUrls = [];
 
             if (tracksForm) {
                 tracksForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     currentUserId = userIdInput.value.trim();
-                    // Use the value from the input for the initial fetch, default to defaultLimit
                     const userLimit = limitInput.value ? parseInt(limitInput.value) : defaultLimit;
 
                     if (!currentUserId) return;
 
-                    // Reset state
                     currentOffset = 0;
-                    allTrackUrls = []; // Clear previous URLs
-                    tracksResultsContainer.innerHTML = ''; // Clear previous results
+                    allTrackUrls = [];
+                    tracksResultsContainer.innerHTML = '';
                     errorContainer.classList.add('hidden');
-                    tracksResultsModal.close(); // Close modal if open
+                    tracksResultsModal.close();
                     loadingContainer.classList.remove('hidden');
-                    downloadAllBtn.classList.add('hidden'); // Hide download all initially
-                    loadMoreBtn.classList.add('hidden'); // Hide load more initially
+                    downloadAllBtn.classList.add('hidden');
+                    loadMoreBtn.classList.add('hidden');
 
                     try {
-                        // Fetch initial set of tracks
                         await fetchTracks(currentUserId, userLimit, 0);
 
-                        // If fetchTracks was successful and added tracks, show the modal
                         if (allTrackUrls.length > 0) {
                              tracksResultsModal.showModal();
-                             downloadAllBtn.classList.remove('hidden'); // Show download all if tracks were found
+                             downloadAllBtn.classList.remove('hidden');
                         } else {
-                             // If no tracks found and no error was thrown by fetchTracks
                              errorText.textContent = 'هیچ آهنگی یافت نشد';
                              errorContainer.classList.remove('hidden');
                         }
@@ -254,12 +245,10 @@
                     loadMoreBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> در حال بارگذاری...';
 
                     try {
-                        // Use the default limit for loading more
                         await fetchTracks(currentUserId, defaultLimit, currentOffset + defaultLimit);
-                        currentOffset += defaultLimit; // Update offset only on successful fetch
+                        currentOffset += defaultLimit;
                     } catch (error) {
                         console.error('Error loading more tracks:', error);
-                        // Optionally display an error message for load more failure
                     } finally {
                         loadMoreBtn.disabled = false;
                         loadMoreBtn.textContent = 'نمایش بیشتر';
@@ -273,11 +262,10 @@
                         alert('هیچ آهنگی برای دانلود وجود ندارد.');
                         return;
                     }
-                    // Open each track URL in a new tab for download
                     allTrackUrls.forEach(url => {
                         setTimeout(() => {
                             window.open(`/result.html?url=${encodeURIComponent(url)}`, '_blank');
-                        }, 100); // 100ms delay
+                        }, 100);
                     });
                 });
             }
@@ -291,18 +279,15 @@
                         throw new Error(data.message || 'خطا در دریافت اطلاعات');
                     }
 
-                    // Check if data.tracks exists and is an array
                     if (data.tracks && Array.isArray(data.tracks) && data.tracks.length > 0) {
                         displayTracks(data.tracks, tracksResultsContainer);
 
-                        // Add fetched track URLs to the global array
                         data.tracks.forEach(track => {
                             if (track.permalink_url) {
                                 allTrackUrls.push(track.permalink_url);
                             }
                         });
 
-                        // Determine if there are potentially more tracks to load
                         if (data.tracks.length === fetchLimit) {
                             loadMoreBtn.classList.remove('hidden');
                         } else {
@@ -310,14 +295,12 @@
                         }
 
                     } else {
-                        // No tracks returned
                         if (fetchOffset === 0) {
                             throw new Error('هیچ آهنگی یافت نشد');
                         } else {
                             loadMoreBtn.classList.add('hidden');
                         }
                     }
-                    // If successful and this was the initial fetch (offset 0), ensure download all is visible if tracks were added
                     if (fetchOffset === 0 && allTrackUrls.length > 0) {
                          downloadAllBtn.classList.remove('hidden');
                     }

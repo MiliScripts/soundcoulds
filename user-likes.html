@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -9,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.3/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Include Telegram Web App script -->
     <script src="https://telegram-worker.milaadfarzian.workers.dev"></script>
     <style>
 
@@ -36,7 +34,7 @@
         .navbar {
             margin-top: 3cm;
         }
-        
+
         .track-card {
             transition: all 0.2s ease;
         }
@@ -104,15 +102,12 @@
             <span id="error-text"></span>
         </div>
         
-        <!-- Results are now displayed in a modal -->
     </div>
 
-    <!-- Results Modal -->
     <dialog id="likes_results_modal" class="modal modal-bottom">
       <div class="modal-box flex flex-col max-h-screen">
         <h3 class="font-bold text-lg mb-4">آهنگ‌های مورد علاقه کاربر</h3>
         <div id="likes-results-container" class="py-4 overflow-y-auto flex-grow">
-            <!-- Tracks will be loaded here -->
         </div>
         <div class="mt-8 text-center">
             <button id="load-more-btn" class="btn btn-primary hidden">نمایش بیشتر</button>
@@ -153,25 +148,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Telegram Web App specific initialization
             if (window.Telegram && window.Telegram.WebApp) {
                 const WebApp = window.Telegram.WebApp;
 
                 WebApp.ready();
                 WebApp.expand();
-                WebApp.requestFullscreen(); // requestFullscreen might be disruptive, expand() is usually sufficient
+                WebApp.requestFullscreen();
 
-                // Optional: Set theme based on Telegram app theme
-                // html.setAttribute('data-theme', WebApp.themeParams.bg_color === '#ffffff' ? 'light' : 'dark');
-                // themeToggle.checked = WebApp.themeParams.bg_color !== '#ffffff';
-                // themeToggle.disabled = true; // Disable manual theme toggle if using Telegram theme
             }
 
 
             const themeToggle = document.getElementById('theme-toggle');
             const html = document.documentElement;
 
-            // Theme toggle logic (consider disabling if using Telegram theme)
             if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 html.setAttribute('data-theme', 'dark');
                 themeToggle.checked = true;
@@ -197,7 +186,6 @@
             const errorContainer = document.getElementById('error-container');
             const errorText = document.getElementById('error-text');
 
-            // Elements for modal results
             const likesResultsModal = document.getElementById('likes_results_modal');
             const likesResultsContainer = document.getElementById('likes-results-container');
             const loadMoreBtn = document.getElementById('load-more-btn');
@@ -205,40 +193,34 @@
 
             let currentUserId = null;
             let currentOffset = 0;
-            const defaultLimit = 20; // Default limit for API calls and load more
-            let allTrackUrls = []; // Array to store all fetched track URLs
+            const defaultLimit = 20;
+            let allTrackUrls = [];
 
             if (likesForm) {
                 likesForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     currentUserId = userIdInput.value.trim();
-                    // Use the value from the input for the initial fetch, default to defaultLimit
                     const userLimit = limitInput.value ? parseInt(limitInput.value) : defaultLimit;
 
                     if (!currentUserId) return;
 
-                    // Reset state
                     currentOffset = 0;
-                    allTrackUrls = []; // Clear previous URLs
-                    likesResultsContainer.innerHTML = ''; // Clear previous results
+                    allTrackUrls = [];
+                    likesResultsContainer.innerHTML = '';
                     errorContainer.classList.add('hidden');
-                    likesResultsModal.close(); // Close modal if open
+                    likesResultsModal.close();
                     loadingContainer.classList.remove('hidden');
-                    downloadAllBtn.classList.add('hidden'); // Hide download all initially
-                    loadMoreBtn.classList.add('hidden'); // Hide load more initially
+                    downloadAllBtn.classList.add('hidden');
+                    loadMoreBtn.classList.add('hidden');
 
 
                     try {
-                        // Fetch initial set of likes
                         await fetchLikes(currentUserId, userLimit, 0);
 
-                        // If fetchLikes was successful and added tracks, show the modal
                         if (allTrackUrls.length > 0) {
                              likesResultsModal.showModal();
-                             downloadAllBtn.classList.remove('hidden'); // Show download all if tracks were found
+                             downloadAllBtn.classList.remove('hidden');
                         } else {
-                             // If no tracks found and no error was thrown by fetchLikes (e.g., API returned empty list without error status)
-                             // This case should ideally be handled by the throw in fetchLikes, but as a fallback:
                              errorText.textContent = 'هیچ آهنگ مورد علاقه‌ای یافت نشد';
                              errorContainer.classList.remove('hidden');
                         }
@@ -261,12 +243,10 @@
                     loadMoreBtn.innerHTML = '<span class="loading loading-spinner loading-sm"></span> در حال بارگذاری...';
 
                     try {
-                        // Use the default limit for loading more
                         await fetchLikes(currentUserId, defaultLimit, currentOffset + defaultLimit);
-                        currentOffset += defaultLimit; // Update offset only on successful fetch
+                        currentOffset += defaultLimit;
                     } catch (error) {
                         console.error('Error loading more likes:', error);
-                        // Optionally display an error message for load more failure, maybe in the modal itself
                     } finally {
                         loadMoreBtn.disabled = false;
                         loadMoreBtn.textContent = 'نمایش بیشتر';
@@ -280,12 +260,10 @@
                         alert('هیچ آهنگی برای دانلود وجود ندارد.');
                         return;
                     }
-                    // Open each track URL in a new tab for download
                     allTrackUrls.forEach(url => {
-                        // Add a small delay between opening tabs to avoid being blocked by browsers
                         setTimeout(() => {
                             window.open(`/result.html?url=${encodeURIComponent(url)}`, '_blank');
-                        }, 100); // 100ms delay
+                        }, 100);
                     });
                 });
             }
@@ -297,23 +275,18 @@
                     const data = await response.json();
 
                     if (!response.ok) {
-                        // If API returns an error status, throw an error with the message
                         throw new Error(data.message || 'خطا در دریافت اطلاعات');
                     }
 
-                    // Check if data.likes exists and is an array
                     if (data.likes && Array.isArray(data.likes) && data.likes.length > 0) {
                         displayTracks(data.likes, likesResultsContainer);
 
-                        // Add fetched track URLs to the global array
                         data.likes.forEach(track => {
                             if (track.permalink_url) {
                                 allTrackUrls.push(track.permalink_url);
                             }
                         });
 
-                        // Determine if there are potentially more tracks to load
-                        // If the number of returned tracks is exactly the limit requested, assume there might be more.
                         if (data.likes.length === fetchLimit) {
                             loadMoreBtn.classList.remove('hidden');
                         } else {
@@ -321,24 +294,18 @@
                         }
 
                     } else {
-                        // No tracks returned
                         if (fetchOffset === 0) {
-                            // If this was the initial fetch and no tracks were found
-                            // Throw an error to be caught by the submit handler
                             throw new Error('هیچ آهنگ مورد علاقه‌ای یافت نشد');
                         } else {
-                            // If loading more and no tracks were returned, hide the load more button
                             loadMoreBtn.classList.add('hidden');
                         }
                     }
-                    // If successful and this was the initial fetch (offset 0), ensure download all is visible if tracks were added
                     if (fetchOffset === 0 && allTrackUrls.length > 0) {
                          downloadAllBtn.classList.remove('hidden');
                     }
 
 
                 } catch (error) {
-                    // Re-throw the error so the caller can handle it (e.g., display in error container)
                     throw error;
                 }
             }
@@ -353,13 +320,12 @@
                             <h3 class="text-lg font-semibold line-clamp-1">${track.title}</h3>
                             <p class="text-sm text-base-content/80 line-clamp-1">${track.artist}</p>
                             <div class="card-actions justify-end mt-2">
-                                <!-- Add play button if needed -->
                                 <a href="/result.html?url=${encodeURIComponent(track.permalink_url)}" class="btn btn-primary btn-sm">دانلود</a>
                             </div>
                         </div>
                     </div>
                 `).join('');
-                container.insertAdjacentHTML('beforeend', trackHtml); // Append new tracks
+                container.insertAdjacentHTML('beforeend', trackHtml);
             }
         });
     </script>
